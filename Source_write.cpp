@@ -31,7 +31,7 @@ void GetFolders(std::vector<std::wstring>& result, const wchar_t* path, bool rec
 						GetFolders(result, name.c_str(), recursive);
 				}
 			}
-			
+
 		} while (FindNextFile(hFind, &data));
 	}
 	FindClose(hFind);
@@ -41,26 +41,32 @@ void GetFolders(std::vector<std::wstring>& result, const wchar_t* path, bool rec
 
 int wmain(int argc, wchar_t *argv[]) {
 	HANDLE hWritePipe;
-	wcout << argv[2] << endl;
 	hWritePipe = (HANDLE)_wtoi(argv[1]);
+	_cputs("Press any key to start communication.\n");
+	_getch();
+
+
 	vector<wstring> files;
 	GetFolders(files, argv[2], TRUE);
 	int amount_of_files = files.size();
 	DWORD dwBytesWritten = 0;
 	WriteFile(hWritePipe, &amount_of_files, sizeof(amount_of_files), &dwBytesWritten, NULL);
-
 	dwBytesWritten = 0;
 	for (int i = 0; i < files.size(); i++) {
-		WriteFile(
+		if (!WriteFile(
 			hWritePipe,
 			files[i].c_str(),
 			wcslen(files[i].c_str()) * sizeof(wchar_t),
 			&dwBytesWritten,
-			NULL);
+			NULL))
 
+			cout << "failed" << GetLastError() << endl;
 
-
+		_cprintf("The number %d is written to the pipe.\n", dwBytesWritten);
+		Sleep(10);
 	}
+	system("pause");
+
 }
 
 
@@ -87,35 +93,35 @@ int wmain(int argc, wchar_t *argv[]) {
 int main(int argc, char *argv[])
 {
 
-	string colour[4] = {"Tolik","Vova","masha","vika"};
-	HANDLE hWritePipe;
-	// преобразуем символьное представление дескриптора в число
-	hWritePipe = (HANDLE)atoi(argv[1]);
-	// ждем команды о начале записи в анонимный канал
-	_cputs("Press any key to start communication.\n");
-	_getch();
-	// пишем в анонимный канал
+string colour[4] = {"Tolik","Vova","masha","vika"};
+HANDLE hWritePipe;
+// преобразуем символьное представление дескриптора в число
+hWritePipe = (HANDLE)atoi(argv[1]);
+// ждем команды о начале записи в анонимный канал
+_cputs("Press any key to start communication.\n");
+_getch();
+// пишем в анонимный канал
 
-	const wchar_t *data = L"*** Hello Pipe World 2***";
-	DWORD dwBytesWritten = 0;
-	if (!WriteFile(
-		hWritePipe,
-		data,
-		wcslen(data) * sizeof(wchar_t),
-		&dwBytesWritten,
-		NULL))
+const wchar_t *data = L"*** Hello Pipe World 2***";
+DWORD dwBytesWritten = 0;
+if (!WriteFile(
+hWritePipe,
+data,
+wcslen(data) * sizeof(wchar_t),
+&dwBytesWritten,
+NULL))
 
-		cout << "failed" << GetLastError() << endl;
-		
-	_cprintf("The number %d is written to the pipe.\n",dwBytesWritten);
-	Sleep(500);
-	
-	// закрываем дескриптор канала
-	CloseHandle(hWritePipe);
-	cout << dwBytesWritten << endl;
-	_cputs("The process finished writing to the pipe.\n");
-	_cputs("Press any key to exit.\n");
-	_getch();
-	return 0;
+cout << "failed" << GetLastError() << endl;
+
+_cprintf("The number %d is written to the pipe.\n",dwBytesWritten);
+Sleep(500);
+
+// закрываем дескриптор канала
+CloseHandle(hWritePipe);
+cout << dwBytesWritten << endl;
+_cputs("The process finished writing to the pipe.\n");
+_cputs("Press any key to exit.\n");
+_getch();
+return 0;
 }
 */

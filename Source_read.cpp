@@ -1,16 +1,14 @@
 #include <windows.h>
 #include <conio.h>
 #include <iostream>
+#include <vector>
+#include <string>
 using namespace std;
 int main()
 {
-	char lpszComLine[100]; // для командной строки
-	char lpszComLine2[100];
+	char lpszComLine[80]; // для командной строки
 	STARTUPINFO si;
 	PROCESS_INFORMATION pi;
-	STARTUPINFO si2;
-	PROCESS_INFORMATION pi2;
-
 	HANDLE hWritePipe, hReadPipe, hInheritWritePipe;
 	// создаем анонимный канал
 	if (!CreatePipe(
@@ -28,7 +26,7 @@ int main()
 	}
 	// делаем наследуемый дубликат дескриптора hWritePipe
 	if (!DuplicateHandle(
-		GetCurrentProcess(), // дескриптор текущего процесса 
+		GetCurrentProcess(), // дескриптор текущего процесса
 		hWritePipe, // исходный дескриптор канала
 		GetCurrentProcess(), // дескриптор текущего процесса
 		&hInheritWritePipe, // новый дескриптор канала
@@ -46,15 +44,9 @@ int main()
 	// устанавливаем атрибуты нового процесса
 	ZeroMemory(&si, sizeof(STARTUPINFO));
 	si.cb = sizeof(STARTUPINFO);
-	ZeroMemory(&si2, sizeof(STARTUPINFO));
-	si2.cb = sizeof(STARTUPINFO);
 	// формируем командную строку
-	char data[50] = "D:\\FILE11";
-	char data2[50] = "D:\\FILE21";
 	wsprintf(lpszComLine, "D:\\second_child.exe %d ", (int)hInheritWritePipe);
-	wsprintf(lpszComLine2, "D:\\second_child2.exe %d ", (int)hInheritWritePipe);
-	strcat(lpszComLine, data);
-	strcat(lpszComLine2, data2);
+	strcat(lpszComLine, "D:\\");
 	// запускаем новый консольный процесс
 	if (!CreateProcess(
 		NULL, // имя процесса
@@ -76,48 +68,19 @@ int main()
 		_getch();
 		return GetLastError();
 	}
-	
-	if (!CreateProcess(
-		NULL, // имя процесса
-		lpszComLine2, // командная строка
-		NULL, // атрибуты защиты процесса по умолчанию
-		NULL, // атрибуты защиты первичного потока по умолчанию
-		TRUE, // наследуемые дескрипторы текущего процесса
-			  // наследуются новым процессом
-		CREATE_NEW_CONSOLE, // новая консоль
-		NULL, // используем среду окружения процесса-предка
-		NULL, // текущий диск и каталог, как и в процессе-предке
-		&si, // вид главного окна - по умолчанию
-		&pi // здесь будут дескрипторы и идентификаторы
-			// нового процесса и его первичного потока
-	))
-	{
-		cout << "Create process failed " << GetLastError();
-		_cputs("Press any key to finish.\n");
-		_getch();
-		return GetLastError();
-	}
-	int a = 5;
-	
 	// закрываем дескрипторы нового процесса
 	CloseHandle(pi.hProcess);
 	CloseHandle(pi.hThread);
 	// закрываем ненужный дескриптор канала
-
-
 	CloseHandle(hInheritWritePipe);
 	// читаем из анонимного канала
-
-	
-
-
-
 	int amount_of_files;
 	DWORD reaad;
 	ReadFile(hReadPipe, &amount_of_files, sizeof(amount_of_files), &reaad, NULL);
-
-	for (int i = 0; i < 100; i++) {
+	vector<wstring> files;
+	for (int i = 0; i < amount_of_files; i++) {
 		wchar_t buffer[128];
+		wstring buf;
 		DWORD numBytesRead = 0;
 		if (!ReadFile(
 			hReadPipe,
@@ -132,10 +95,19 @@ int main()
 			return GetLastError();
 		}
 		buffer[numBytesRead / sizeof(wchar_t)] = '\0'; // null terminate the string
-		wcout << "Message: " << buffer << endl;
+		//wcout << "Number of bytes read: " << numBytesRead << endl;
+		//wcout << "Message: " << buffer << endl;
+		buf = buffer;
+		files.push_back(buf);
 
-	// закрываем дескриптор канала
+
+
+		// закрываем дескриптор канала
 	}
+	for (int i = 0; i < files.size(); i++) {
+		wcout << files[i] << endl;
+	}
+
 	CloseHandle(hReadPipe);
 	_cputs("The process finished reading from the pipe.\n");
 	_cputs("Press any key to exit.\n");
