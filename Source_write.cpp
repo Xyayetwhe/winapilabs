@@ -31,7 +31,7 @@ void GetFolders(std::vector<std::wstring>& result, const wchar_t* path, bool rec
 						GetFolders(result, name.c_str(), recursive);
 				}
 			}
-
+			
 		} while (FindNextFile(hFind, &data));
 	}
 	FindClose(hFind);
@@ -39,31 +39,28 @@ void GetFolders(std::vector<std::wstring>& result, const wchar_t* path, bool rec
 
 
 
-int main(int argc, char *argv[]) {
+int wmain(int argc, wchar_t *argv[]) {
 	HANDLE hWritePipe;
-	hWritePipe = (HANDLE)atoi(argv[1]);
-	_cputs("Press any key to start communication.\n");
-	_getch();
-
-
+	wcout << argv[2] << endl;
+	hWritePipe = (HANDLE)_wtoi(argv[1]);
 	vector<wstring> files;
-	GetFolders(files, L"D:\\", TRUE);
+	GetFolders(files, argv[2], TRUE);
+	int amount_of_files = files.size();
 	DWORD dwBytesWritten = 0;
+	WriteFile(hWritePipe, &amount_of_files, sizeof(amount_of_files), &dwBytesWritten, NULL);
+
+	dwBytesWritten = 0;
 	for (int i = 0; i < files.size(); i++) {
-		if (!WriteFile(
+		WriteFile(
 			hWritePipe,
 			files[i].c_str(),
 			wcslen(files[i].c_str()) * sizeof(wchar_t),
 			&dwBytesWritten,
-			NULL))
+			NULL);
 
-			cout << "failed" << GetLastError() << endl;
 
-		_cprintf("The number %d is written to the pipe.\n", dwBytesWritten);
-		Sleep(500);
+
 	}
-	system("pause");
-
 }
 
 
@@ -92,12 +89,12 @@ int main(int argc, char *argv[])
 
 	string colour[4] = {"Tolik","Vova","masha","vika"};
 	HANDLE hWritePipe;
-	// ïðåîáðàçóåì ñèìâîëüíîå ïðåäñòàâëåíèå äåñêðèïòîðà â ÷èñëî
+	// Ð¿Ñ€ÐµÐ¾Ð±Ñ€Ð°Ð·ÑƒÐµÐ¼ ÑÐ¸Ð¼Ð²Ð¾Ð»ÑŒÐ½Ð¾Ðµ Ð¿Ñ€ÐµÐ´ÑÑ‚Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ Ð´ÐµÑÐºÑ€Ð¸Ð¿Ñ‚Ð¾Ñ€Ð° Ð² Ñ‡Ð¸ÑÐ»Ð¾
 	hWritePipe = (HANDLE)atoi(argv[1]);
-	// æäåì êîìàíäû î íà÷àëå çàïèñè â àíîíèìíûé êàíàë
+	// Ð¶Ð´ÐµÐ¼ ÐºÐ¾Ð¼Ð°Ð½Ð´Ñ‹ Ð¾ Ð½Ð°Ñ‡Ð°Ð»Ðµ Ð·Ð°Ð¿Ð¸ÑÐ¸ Ð² Ð°Ð½Ð¾Ð½Ð¸Ð¼Ð½Ñ‹Ð¹ ÐºÐ°Ð½Ð°Ð»
 	_cputs("Press any key to start communication.\n");
 	_getch();
-	// ïèøåì â àíîíèìíûé êàíàë
+	// Ð¿Ð¸ÑˆÐµÐ¼ Ð² Ð°Ð½Ð¾Ð½Ð¸Ð¼Ð½Ñ‹Ð¹ ÐºÐ°Ð½Ð°Ð»
 
 	const wchar_t *data = L"*** Hello Pipe World 2***";
 	DWORD dwBytesWritten = 0;
@@ -109,11 +106,11 @@ int main(int argc, char *argv[])
 		NULL))
 
 		cout << "failed" << GetLastError() << endl;
-
+		
 	_cprintf("The number %d is written to the pipe.\n",dwBytesWritten);
 	Sleep(500);
-
-	// çàêðûâàåì äåñêðèïòîð êàíàëà
+	
+	// Ð·Ð°ÐºÑ€Ñ‹Ð²Ð°ÐµÐ¼ Ð´ÐµÑÐºÑ€Ð¸Ð¿Ñ‚Ð¾Ñ€ ÐºÐ°Ð½Ð°Ð»Ð°
 	CloseHandle(hWritePipe);
 	cout << dwBytesWritten << endl;
 	_cputs("The process finished writing to the pipe.\n");
