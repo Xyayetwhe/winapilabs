@@ -24,7 +24,7 @@ int main()
 	}
 	// делаем наследуемый дубликат дескриптора hWritePipe
 	if (!DuplicateHandle(
-		GetCurrentProcess(), // дескриптор текущего процесса 
+		GetCurrentProcess(), // дескриптор текущего процесса
 		hWritePipe, // исходный дескриптор канала
 		GetCurrentProcess(), // дескриптор текущего процесса
 		&hInheritWritePipe, // новый дескриптор канала
@@ -71,25 +71,27 @@ int main()
 	// закрываем ненужный дескриптор канала
 	CloseHandle(hInheritWritePipe);
 	// читаем из анонимного канала
-	wchar_t buffer[128];
-	DWORD numBytesRead = 0;
-	if (!ReadFile(
-		hReadPipe,
-		buffer,
-		127 * sizeof(wchar_t),
-		&numBytesRead,
-		NULL))
-	{
-		_cputs("Read from the pipe failed.\n");
-		_cputs("Press any key to finish.\n");
-		_getch();
-		return GetLastError();
-	}
-	buffer[numBytesRead / sizeof(wchar_t)] = '\0'; // null terminate the string
-	wcout << "Number of bytes read: " << numBytesRead << endl;
-	wcout << "Message: " << buffer << endl;
-	
+	for (int i = 0; i < 48; i++) {
+		wchar_t buffer[128];
+		DWORD numBytesRead = 0;
+		if (!ReadFile(
+			hReadPipe,
+			buffer,
+			127 * sizeof(wchar_t),
+			&numBytesRead,
+			NULL))
+		{
+			_cputs("Read from the pipe failed.\n");
+			_cputs("Press any key to finish.\n");
+			_getch();
+			return GetLastError();
+		}
+		buffer[numBytesRead / sizeof(wchar_t)] = '\0'; // null terminate the string
+		wcout << "Number of bytes read: " << numBytesRead << endl;
+		wcout << "Message: " << buffer << endl;
+
 	// закрываем дескриптор канала
+	}
 	CloseHandle(hReadPipe);
 	_cputs("The process finished reading from the pipe.\n");
 	_cputs("Press any key to exit.\n");
