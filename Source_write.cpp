@@ -42,8 +42,6 @@ void GetFolders(std::vector<std::wstring>& result, const wchar_t* path, bool rec
 int wmain(int argc, wchar_t *argv[]) {
 	HANDLE hWritePipe;
 	hWritePipe = (HANDLE)_wtoi(argv[1]);
-	_cputs("Press any key to start communication.\n");
-	_getch();
 
 
 	vector<wstring> files;
@@ -53,16 +51,14 @@ int wmain(int argc, wchar_t *argv[]) {
 	WriteFile(hWritePipe, &amount_of_files, sizeof(amount_of_files), &dwBytesWritten, NULL);
 	dwBytesWritten = 0;
 	for (int i = 0; i < files.size(); i++) {
-		if (!WriteFile(
+		WriteFile(
 			hWritePipe,
 			files[i].c_str(),
 			wcslen(files[i].c_str()) * sizeof(wchar_t),
 			&dwBytesWritten,
-			NULL))
+			NULL);
 
-			cout << "failed" << GetLastError() << endl;
 
-		_cprintf("The number %d is written to the pipe.\n", dwBytesWritten);
 		Sleep(10);
 	}
 	system("pause");
