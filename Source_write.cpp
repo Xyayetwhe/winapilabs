@@ -25,7 +25,23 @@ void GetFolders(std::vector<std::wstring>& result, const wchar_t* path, bool rec
 				// Skip . and .. pseudo folders.
 				if (wcscmp(data.cFileName, L".") != 0 && wcscmp(data.cFileName, L"..") != 0)
 				{
-					result.push_back(name);
+					DWORD dwAttrib = GetFileAttributes(name.c_str());
+					if (dwAttrib != INVALID_FILE_ATTRIBUTES &&
+						!(dwAttrib & FILE_ATTRIBUTE_DIRECTORY)) {
+						HANDLE read_hand;
+						wchar_t Buffer[5] = L"0";
+						DWORD read_b;
+						wstring data;
+						read_hand = CreateFile(name.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+						ReadFile(read_hand, Buffer, 256, &read_b, NULL);
+
+						data = Buffer;
+						data = name + L" " + data;
+						result.push_back(data);
+					}
+
+
+
 					if (recursive)
 						// TODO: It would be wise to check for cycles!
 						GetFolders(result, name.c_str(), recursive);

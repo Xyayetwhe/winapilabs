@@ -4,7 +4,11 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <map>
 using namespace std;
+
+
+
 int main()
 {
 	char lpszComLine[80];
@@ -54,8 +58,8 @@ int main()
 	wsprintf(lpszComLine, "D:\\second_child.exe %d ", (int)hInheritWritePipe);
 	wsprintf(lpszComLine2, "D:\\second_child.exe %d ", (int)hInheritWritePipe);
 
-	strcat(lpszComLine, "D:\\");
-	strcat(lpszComLine2, "E:\\");
+	strcat(lpszComLine, "D:\\FILE11");
+	strcat(lpszComLine2, "D:\\ForSearch2");
 	// запускаем новый консольный процесс
 	if (!CreateProcess(
 		NULL, // имя процесса
@@ -77,6 +81,7 @@ int main()
 		_getch();
 		return GetLastError();
 	}
+
 	if (!CreateProcess(
 		NULL, // имя процесса
 		lpszComLine2, // командная строка
@@ -97,11 +102,10 @@ int main()
 		_getch();
 		return GetLastError();
 	}
+
 	// закрываем дескрипторы нового процесса
 	CloseHandle(pi.hProcess);
 	CloseHandle(pi.hThread);
-	CloseHandle(pi2.hProcess);
-	CloseHandle(pi2.hThread);
 	// закрываем ненужный дескриптор канала
 	CloseHandle(hInheritWritePipe);
 	// читаем из анонимного канала
@@ -135,12 +139,32 @@ int main()
 
 		// закрываем дескриптор канала
 	}
+
+	map<wstring, int> mapOfWords;
 	for (int i = 0; i < files.size(); i++) {
-		PDWORD HEAD;
-		PDWORD READ;
-		MapFileAndCheckSumW(files[i].c_str(), HEAD, READ);
-		cout << READ << endl;
+		if (files[i].length() > 1) {
+
+			size_t found = files[i].find_first_of(L" ");
+			files[i].substr(0, found);
+			int num = _wtoi(files[i].substr(found, files[i].length()).c_str());
+
+			mapOfWords.insert(make_pair(files[i].substr(0, found),num));
+
+		}
 	}
+	int max = mapOfWords.begin()->second;
+	wstring path;
+
+	for (auto it = mapOfWords.begin(); it != mapOfWords.end(); ++it)
+	{
+		if (it->second > max) max = it->second;
+	}
+	for (auto it = mapOfWords.begin(); it != mapOfWords.end(); ++it)
+	{
+		if (it->second == max) path = it->first;
+	}
+
+
 
 	CloseHandle(hReadPipe);
 	_cputs("The process finished reading from the pipe.\n");
