@@ -77,7 +77,7 @@ int wmain(int argc, wchar_t *argv[]) {
 
 		Sleep(10);
 	}
-	system("pause");
+
 
 }
 
