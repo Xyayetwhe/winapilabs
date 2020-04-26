@@ -54,39 +54,39 @@ LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
 			CreateDirs(L"D:\\FILE11\\FILE12\\FILE13\\", hWnd);
 			CreateDirs(L"D:\\FILE21\\", hWnd);
 			break;
-			/*
+			
 		case COPY_AND_CREATE_FILES:
-			STARTUPINFO si;
-			PROCESS_INFORMATION piApp;
-			ZeroMemory(&si, sizeof(STARTUPINFO));
-			si.cb = sizeof(STARTUPINFO);
+			STARTUPINFO si1;
+			PROCESS_INFORMATION piApp1;
+			ZeroMemory(&si1, sizeof(STARTUPINFO));
+			si1.cb = sizeof(STARTUPINFO);
 			if (!CreateProcess("D:\\processes\\CreateFChild.exe", NULL, NULL, NULL, FALSE,
-				CREATE_NEW_CONSOLE, NULL, NULL, &si, &piApp))
+				CREATE_NEW_CONSOLE, NULL, NULL, &si1, &piApp1))
 
 			{
 				cout << "The mew process is not created." << endl
 					<< "Check a name of the process." << endl;
 			}
 			// ждем завершения созданного процесса
-			WaitForSingleObject(piApp.hProcess, INFINITE);
-			CloseHandle(piApp.hThread);
-			CloseHandle(piApp.hProcess);
-			ZeroMemory(&si, sizeof(STARTUPINFO));
-			si.cb = sizeof(STARTUPINFO);
+			WaitForSingleObject(piApp1.hProcess, INFINITE);
+			CloseHandle(piApp1.hThread);
+			CloseHandle(piApp1.hProcess);
+			ZeroMemory(&si1, sizeof(STARTUPINFO));
+			si1.cb = sizeof(STARTUPINFO);
 			if (!CreateProcess("D:\\processes\\CreateFiles.exe", NULL, NULL, NULL, FALSE,
-				NULL, NULL, NULL, &si, &piApp))
+				NULL, NULL, NULL, &si1, &piApp1))
 
 			{
 				cout << "The mew process is not created." << endl
 					<< "Check a name of the process." << endl;
 			}
 			// ждем завершения созданного процесса
-			WaitForSingleObject(piApp.hProcess, INFINITE);
-			CloseHandle(piApp.hThread);
-			CloseHandle(piApp.hProcess);
+			WaitForSingleObject(piApp1.hProcess, INFINITE);
+			CloseHandle(piApp1.hThread);
+			CloseHandle(piApp1.hProcess);
 
 			break;
-			*/
+			
 		case FIND_TWO_PROC:
 			char lpszComLine[80];
 			char lpszComLine2[80];// для командной строки
