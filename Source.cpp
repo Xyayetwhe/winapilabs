@@ -1,23 +1,39 @@
-
 #include <windows.h>
 #include <conio.h>
 #include <imagehlp.h>
 #include <iostream>
 #include <map>
 #include <vector>
+#include <commctrl.h>
 using namespace std;
 #define CREATE_DIRS 1
 #define COPY_AND_CREATE_FILES 2
 #define FIND_TWO_PROC 3
+#define BLOCK_ONE_KYLO 4
 
 wchar_t dir[1000];
 wchar_t create_file[1000];
 
 LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
-HWND first_path, second_path;
+HWND first_path, second_path, hwndList;
 void AddMenus(HWND);
 void AddFields(HWND);
 void CreateDirs(wstring path, HWND hWnd);
+vector<wstring> files;
+
+
+typedef struct {
+
+	wchar_t name[30];
+	wchar_t job[20];
+	int age;
+
+} Friends;
+
+
+
+
+
 
 
 
@@ -48,13 +64,13 @@ LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
 	switch (msg) {
 
 	case WM_COMMAND:
-		
+
 		switch (wp) {
 		case CREATE_DIRS:
 			CreateDirs(L"D:\\FILE11\\FILE12\\FILE13\\", hWnd);
 			CreateDirs(L"D:\\FILE21\\", hWnd);
 			break;
-			
+
 		case COPY_AND_CREATE_FILES:
 			STARTUPINFO si1;
 			PROCESS_INFORMATION piApp1;
@@ -86,7 +102,7 @@ LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
 			CloseHandle(piApp1.hProcess);
 
 			break;
-			
+
 		case FIND_TWO_PROC:
 			char lpszComLine[80];
 			char lpszComLine2[80];// для командной строки
@@ -219,16 +235,16 @@ LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
 															   //wcout << "Message: " << buffer << endl;
 				buf = buffer;
 				files.push_back(buf);
-
-
-
-				// закрываем дескриптор канала
 			}
+
+
+
+
 
 			map<wstring, int> mapOfWords;
 			for (int i = 0; i < files.size(); i++) {
 				if (files[i].length() > 1) {
-
+					SendMessageW(hwndList, LB_ADDSTRING, 0, (LPARAM)files[i].c_str());
 					size_t found = files[i].find_first_of(L" ");
 					files[i].substr(0, found);
 					int num = _wtoi(files[i].substr(found, files[i].length()).c_str());
@@ -249,7 +265,7 @@ LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
 				if (it->second == max) path = it->first;
 			}
 
-			MessageBoxW(hWnd,path.c_str(),L"File with biggest sum",MB_OK);
+			MessageBoxW(hWnd, path.c_str(), L"File with biggest sum", MB_OK);
 
 			CloseHandle(hReadPipe);
 
@@ -282,6 +298,11 @@ void AddFields(HWND hWnd) {
 	first_path = CreateWindowW(L"Edit", L"", ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | WS_VISIBLE | WS_CHILD, 370, 0, 120, 40, hWnd, NULL, NULL, NULL);
 	second_path = CreateWindowW(L"Edit", L"", ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | WS_VISIBLE | WS_CHILD, 370, 45, 120, 40, hWnd, NULL, NULL, NULL);
 	CreateWindowW(L"Button", L"Find files", WS_VISIBLE | WS_CHILD, 500, 25, 98, 38, hWnd, (HMENU)FIND_TWO_PROC, NULL, NULL);
+	hwndList = CreateWindowW(WC_LISTBOXW, NULL, WS_CHILD
+		| WS_VISIBLE | LBS_NOTIFY, 10, 200, 300, 150, hWnd,
+		NULL, NULL, NULL);
+
+
 
 
 
@@ -297,36 +318,3 @@ void CreateDirs(wstring path, HWND hWnd) {
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-int main()
-{
-wchar_t lpszCommandLine[] = L"D:\\asd.exe C:\\masm32 D:\\File11";
-STARTUPINFO si;
-PROCESS_INFORMATION piCom;
-ZeroMemory(&si, sizeof(STARTUPINFO));
-si.cb = sizeof(STARTUPINFO);
-// создаем новый консольный процесс
-CreateProcess(NULL, lpszCommandLine, NULL, NULL, FALSE,
-NULL, NULL, NULL, &si, &piCom);
-// закрываем дескрипторы этого процесса
-CloseHandle(piCom.hThread);
-CloseHandle(piCom.hProcess);
-cout << "the new process is created" << endl;
-cout << "type anything to finish" << endl;
-return 0;
-}
-*/

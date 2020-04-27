@@ -1,0 +1,19 @@
+#include <windows.h>
+#include <conio.h>
+#include <string>
+#include <iostream>
+#include <vector>
+using namespace std;
+
+
+
+
+int main(int argc, wchar_t *argv[]) {
+
+	HANDLE my_file = CreateFileA("D:\\ForSearch2\\deletekilo.txt", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	int size = GetFileSize(my_file, NULL);
+	SetFilePointer(my_file, size-1024, NULL, FILE_BEGIN);
+	SetEndOfFile(my_file);
+	
+	system("pause");
+}
