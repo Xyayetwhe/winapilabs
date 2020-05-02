@@ -1,6 +1,3 @@
-
-
-
 #include <windows.h>
 #include <conio.h>
 #include <imagehlp.h>
@@ -12,7 +9,8 @@ using namespace std;
 #define CREATE_DIRS 1
 #define COPY_AND_CREATE_FILES 2
 #define FIND_TWO_PROC 3
-#define BLOCK_ONE_KYLO 8
+#define BLOCK_ONE_KYLO 4
+#define DELETE_ONE_KYLO 5
 
 wchar_t dir[1000];
 wchar_t create_file[1000];
@@ -152,8 +150,8 @@ LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
 				ZeroMemory(&si2, sizeof(STARTUPINFO));
 				si2.cb = sizeof(STARTUPINFO);
 				// формируем командную строку
-				wsprintf(lpszComLine, "D:\\second_child.exe %d ", (int)hInheritWritePipe);
-				wsprintf(lpszComLine2, "D:\\second_child.exe %d ", (int)hInheritWritePipe);
+				wsprintf(lpszComLine, "D:\\processes\\FindFiles.exe %d ", (int)hInheritWritePipe);
+				wsprintf(lpszComLine2, "D:\\processes\\FindFiles.exe %d ", (int)hInheritWritePipe);
 
 				strcat(lpszComLine, path1);
 				strcat(lpszComLine2, path2);
@@ -288,10 +286,36 @@ LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
 
 
 				if (!(CreateProcessW(NULL, lpszComLine2, NULL, NULL, TRUE, NULL, NULL, NULL, &si, &pi))) cout << GetLastError();
-
+				CloseHandle(pi.hProcess);
+				CloseHandle(pi.hThread);
 
 				break;
 			}
+			case DELETE_ONE_KYLO:
+			{
+				int sel = (int)SendMessageW(hwndList, LB_GETCURSEL, 0, 0);
+
+				wstring path = files[sel];
+				size_t found = path.find_first_of(L" ");
+				path = path.substr(0, found);
+
+				STARTUPINFOW si;
+				PROCESS_INFORMATION pi;
+				ZeroMemory(&si, sizeof(STARTUPINFOW));
+				si.cb = sizeof(STARTUPINFOW);
+				wchar_t lpszComLine2[80];
+				wcscpy(lpszComLine2, L"D:\\processes\\remove_kilo.exe ");
+				wcscat(lpszComLine2, path.c_str());
+
+
+
+				if (!(CreateProcessW(NULL, lpszComLine2, NULL, NULL, TRUE, NULL, NULL, NULL, &si, &pi))) cout << GetLastError();
+				CloseHandle(pi.hProcess);
+				CloseHandle(pi.hThread);
+
+
+			}
+
 
 		}
 		break;
@@ -322,6 +346,8 @@ void AddFields(HWND hWnd) {
 		| WS_VISIBLE | LBS_NOTIFY, 10, 200, 300, 150, hWnd,
 		NULL, NULL, NULL);
 	CreateWindowW(L"Button", L"Block Kylo", WS_VISIBLE | WS_CHILD, 330, 200, 98, 38, hWnd, (HMENU)BLOCK_ONE_KYLO, NULL, NULL);
+	CreateWindowW(L"Button", L"Delete Kylo", WS_VISIBLE | WS_CHILD, 330, 300, 98, 38, hWnd, (HMENU)DELETE_ONE_KYLO, NULL, NULL);
+
 
 
 
@@ -338,53 +364,3 @@ void CreateDirs(wstring path, HWND hWnd) {
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-int main() {
-	STARTUPINFO si;
-	PROCESS_INFORMATION pi;
-	ZeroMemory(&si, sizeof(STARTUPINFO));
-	si.cb = sizeof(STARTUPINFO);
-	char lpszComLine2[80];
-	wsprintf(lpszComLine2, "D:\\processes\\lock_kilo.exe ");
-	strcat(lpszComLine2, "D:\\ForSearch2\\Vika2.txt");
-
-
-
-	if (!(CreateProcessA(NULL, lpszComLine2, NULL, NULL, TRUE, NULL, NULL, NULL, &si, &pi))) cout << GetLastError();
-	system("pause");
-
-}
-*/
