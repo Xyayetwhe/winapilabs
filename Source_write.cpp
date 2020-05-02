@@ -29,21 +29,23 @@ void GetFolders(std::vector<std::wstring>& result, const wchar_t* path, bool rec
 					if (dwAttrib != INVALID_FILE_ATTRIBUTES &&
 						!(dwAttrib & FILE_ATTRIBUTE_DIRECTORY)) {
 						HANDLE read_hand;
-						wchar_t Buffer[5] = L"0";
+						char Buffer[10] = "0";
 						DWORD read_b;
 						wstring data;
 						read_hand = CreateFile(name.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-						ReadFile(read_hand, Buffer, 256, &read_b, NULL);
+						ReadFile(read_hand, Buffer, 10, &read_b, NULL);
+						std::wstring wc(10, L'#');
+						mbstowcs(&wc[0], Buffer, 10);
 
-						data = Buffer;
-						data = name + L" " + data;
+
+						data = name + L" " + wc;
 						result.push_back(data);
 					}
 
 
 
 					if (recursive)
-						// TODO: It would be wise to check for cycles!
+
 						GetFolders(result, name.c_str(), recursive);
 				}
 			}
@@ -80,60 +82,3 @@ int wmain(int argc, wchar_t *argv[]) {
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-int main(int argc, char *argv[])
-{
-
-string colour[4] = {"Tolik","Vova","masha","vika"};
-HANDLE hWritePipe;
-// преобразуем символьное представление дескриптора в число
-hWritePipe = (HANDLE)atoi(argv[1]);
-// ждем команды о начале записи в анонимный канал
-_cputs("Press any key to start communication.\n");
-_getch();
-// пишем в анонимный канал
-
-const wchar_t *data = L"*** Hello Pipe World 2***";
-DWORD dwBytesWritten = 0;
-if (!WriteFile(
-hWritePipe,
-data,
-wcslen(data) * sizeof(wchar_t),
-&dwBytesWritten,
-NULL))
-
-cout << "failed" << GetLastError() << endl;
-
-_cprintf("The number %d is written to the pipe.\n",dwBytesWritten);
-Sleep(500);
-
-// закрываем дескриптор канала
-CloseHandle(hWritePipe);
-cout << dwBytesWritten << endl;
-_cputs("The process finished writing to the pipe.\n");
-_cputs("Press any key to exit.\n");
-_getch();
-return 0;
-}
-*/
