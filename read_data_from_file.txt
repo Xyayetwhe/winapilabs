@@ -1,0 +1,22 @@
+
+#include <windows.h>
+#include <conio.h>
+#include <imagehlp.h>
+#include <iostream>
+#include <map>
+#include <vector>
+using namespace std;
+
+
+
+int main() {
+	HANDLE read_hand;
+	DWORD read_b;
+	CHAR Buffer[256] = "0";
+	read_hand = CreateFileA("D:\\ForSearch2\\Vika2.txt", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	ReadFile(read_hand, Buffer, 256, &read_b, NULL);
+	cout << "In file:";
+	printf(Buffer);
+	cout << endl << "Error code:" << GetLastError();
+	system("pause");
+}

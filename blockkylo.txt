@@ -1,0 +1,36 @@
+#include <windows.h>
+#include <conio.h>
+#include <string>
+#include <iostream>
+#include <vector>
+using namespace std;
+HANDLE wread_file_getHandle(string filename) {
+	HANDLE hOut;
+	hOut = CreateFileA(filename.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_WRITE, NULL,
+		OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (hOut == INVALID_HANDLE_VALUE) {
+		cout << "ERROR " << GetLastError();
+	}
+
+	return hOut;
+}
+
+
+bool blockKiloByte(string filename) {
+	int j = 0;
+	DWORD index = static_cast<DWORD>(1024);
+	HANDLE hFile = wread_file_getHandle(filename);
+	if (LockFile(hFile, 0, 0, index, 0)) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+
+
+int main(int argc, char *argv[]) {
+	blockKiloByte(argv[1]);
+	system("pause");
+}

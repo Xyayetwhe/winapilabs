@@ -1,0 +1,21 @@
+#include <windows.h>
+#include <conio.h>
+#include <windows.h>
+#include <conio.h>
+#include <string>
+#include <iostream>
+#include <vector>
+using namespace std;
+
+
+
+
+int main(int argc, char *argv[]) {
+	cout << argv[1] << endl;
+	HANDLE my_file = CreateFileA(argv[1], GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	int size = GetFileSize(my_file, NULL);
+	SetFilePointer(my_file, size - 1024, NULL, FILE_BEGIN);
+	SetEndOfFile(my_file);
+
+
+}
